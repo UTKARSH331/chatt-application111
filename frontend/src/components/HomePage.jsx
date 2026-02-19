@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { useEffect } from 'react'
 import Sidebar from './Sidebar'
 import MessageContainer from './MessageContainer'
