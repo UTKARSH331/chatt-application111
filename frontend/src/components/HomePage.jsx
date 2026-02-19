@@ -14,7 +14,7 @@ const HomePage = () => {
     if (!authUser) {
       navigate("/login");
     }
-  }, [authUser]);
+  }, [authUser, navigate]);
 
   // Don't render anything until we confirm auth - prevents Sidebar crash with null data
   if (!authUser) {
