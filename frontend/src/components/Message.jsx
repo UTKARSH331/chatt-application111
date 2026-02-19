@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useSelector, useDispatch } from "react-redux";
-import { BsCheck, BsCheckAll } from "react-icons/bs";
+import { BsCheckAll } from "react-icons/bs";
 import { IoChevronDown } from "react-icons/io5";
 import axios from "axios";
 import { BASE_URL } from '../config';
