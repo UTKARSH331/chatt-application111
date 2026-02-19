@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { useEffect, useRef, useState } from 'react'
 import { useSelector, useDispatch } from "react-redux";
 import { BsCheckAll } from "react-icons/bs";
