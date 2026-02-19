@@ -68,7 +68,7 @@ function App() {
         dispatch(setSocket(null));
       }
     }
-  }, [authUser]);
+  }, [authUser, dispatch, socket]);
 
   return (
     <div className="p-4 h-screen flex items-center justify-center">
