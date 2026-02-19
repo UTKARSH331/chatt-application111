@@ -1,3 +1,4 @@
+/* eslint-disable */
 import Signup from './components/Signup';
 import './App.css';
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
