@@ -1,7 +1,15 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { setIncomingCall, setActiveCall, endCall, addToCallHistory, setCallStatus } from '../redux/callSlice';
-import { IoCall, IoClose, IoMicOff, IoMic, IoPersonAdd, IoArrowBack } from 'react-icons/io5';
+import { IoCall, IoMicOff, IoMic, IoPersonAdd } from 'react-icons/io5';
+
+// ICE servers for WebRTC - Move outside to avoid dependency issues in hooks
+const iceServers = {
+    iceServers: [
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' }
+    ]
+};
 
 const VoiceCall = () => {
     const { incomingCall, activeCall, callStatus } = useSelector(store => store.call);
@@ -15,13 +23,7 @@ const VoiceCall = () => {
     const [callDuration, setCallDuration] = useState(0);
     const timerRef = useRef(null);
 
-    // ICE servers for WebRTC
-    const iceServers = {
-        iceServers: [
-            { urls: 'stun:stun.l.google.com:19302' },
-            { urls: 'stun:stun1.l.google.com:19302' }
-        ]
-    };
+
 
     // --- Cleanup ---
     const cleanupCall = useCallback(() => {
@@ -41,7 +43,7 @@ const VoiceCall = () => {
         setIsMuted(false);
         // Remove active call UI
         // dispatch(endCall()); // This is called by caller
-    }, [dispatch]);
+    }, []);
 
     const startTimer = useCallback(() => {
         if (!timerRef.current) {
@@ -58,45 +60,7 @@ const VoiceCall = () => {
         return `${m}:${s}`;
     };
 
-    // --- WebRTC Logic ---
-    const createPeerConnection = useCallback((targetSocketId) => {
-        const pc = new RTCPeerConnection(iceServers);
 
-        // Add local stream tracks
-        if (localStreamRef.current) {
-            localStreamRef.current.getTracks().forEach(track => {
-                pc.addTrack(track, localStreamRef.current);
-            });
-        }
-
-        // Handle ICE candidates
-        pc.onicecandidate = (event) => {
-            if (event.candidate) {
-                socket.emit('iceCandidate', {
-                    to: authUser._id === targetSocketId ? activeCall?.peerId : targetSocketId, // Allow flexible target? No, standard P2P
-                    // Actually target is whoever we are calling. 
-                    // If we are caller, target is receiver. If receiver, target is caller.
-                    // For initiate: target is receiver.
-                    // For answer: target is caller (incomingCall.from)
-                    candidate: event.candidate
-                });
-                // Fix: The 'to' in emit should be the other person's ID.
-                // We need to know who we are talking to.
-                // activeCall should have peerId.
-            }
-        };
-
-        // Handle remote stream
-        pc.ontrack = (event) => {
-            const remoteAudio = document.getElementById('remote-audio');
-            if (remoteAudio) {
-                remoteAudio.srcObject = event.streams[0];
-            }
-        };
-
-        peerConnectionRef.current = pc;
-        return pc;
-    }, [socket, activeCall, authUser]);
 
 
     // --- 1. Global Initiator (Exposed to Window) ---
