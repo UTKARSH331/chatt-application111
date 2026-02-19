@@ -28,10 +28,23 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
 const corsOption = {
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    origin: (origin, callback) => {
+        const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:3000').split(',');
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true
 };
 app.use(cors(corsOption));
+
+// Middleware to fix double slashes in URLs (e.g., //api)
+app.use((req, res, next) => {
+    req.url = req.url.replace(/\/\/+/g, '/');
+    next();
+});
 
 // Serve uploaded files as static
 app.use('/uploads', express.static(uploadsDir));
