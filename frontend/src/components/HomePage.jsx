@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import Sidebar from './Sidebar'
 import MessageContainer from './MessageContainer'
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 
 
@@ -14,6 +14,7 @@ const HomePage = () => {
     if (!authUser) {
       navigate("/login");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authUser, navigate]);
 
   // Don't render anything until we confirm auth - prevents Sidebar crash with null data
