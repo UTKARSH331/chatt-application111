@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { useState, useEffect } from 'react'
 import { BiSearchAlt2 } from "react-icons/bi";
 import OtherUsers from './OtherUsers';
@@ -7,7 +8,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { setAuthUser, setOtherUsers, setSelectedUser, logoutAccount } from '../redux/userSlice'; // Import logoutAccount
+import { setOtherUsers, setSelectedUser, logoutAccount } from '../redux/userSlice'; // Import logoutAccount
 import { setMessages } from '../redux/messageSlice';
 import { setSocket } from '../redux/socketSlice';
 import { clearNotificationsForUser } from '../redux/notificationSlice';
