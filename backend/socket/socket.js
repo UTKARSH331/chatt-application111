@@ -4,11 +4,23 @@ import express from "express";
 
 const app = express();
 
-const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: [process.env.FRONTEND_URL || 'http://localhost:3000'],
+        origin: (origin, callback) => {
+            const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:3000')
+                .split(',')
+                .map(url => url.trim().replace(/\/$/, ""));
+            const cleanOrigin = origin ? origin.replace(/\/$/, "") : null;
+            const isVercel = cleanOrigin && cleanOrigin.endsWith(".vercel.app");
+
+            if (!origin || allowedOrigins.includes(cleanOrigin) || isVercel) {
+                callback(null, true);
+            } else {
+                callback(new Error('Not allowed by CORS'));
+            }
+        },
         methods: ['GET', 'POST'],
+        credentials: true
     },
 });
 
