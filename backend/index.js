@@ -23,28 +23,40 @@ if (!fs.existsSync(uploadsDir)) {
 
 const PORT = process.env.PORT || 5000;
 
-// middleware
+// 1. High-Priority Middleware: Fix double slashes in URLs (e.g., //api) IMMEDIATELY
+app.use((req, res, next) => {
+    req.url = req.url.replace(/\/\/+/g, '/');
+    next();
+});
+
+// 2. Middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
+
 const corsOption = {
     origin: (origin, callback) => {
-        const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:3000').split(',');
-        if (!origin || allowedOrigins.includes(origin)) {
+        // Sanitize origins: trim spaces and remove trailing slashes
+        const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:3000')
+            .split(',')
+            .map(url => url.trim().replace(/\/$/, ""));
+
+        // Sanitize incoming origin
+        const cleanOrigin = origin ? origin.replace(/\/$/, "") : null;
+
+        // Auto-allow ANY Vercel domain (previews, branches, etc.)
+        const isVercel = cleanOrigin && (cleanOrigin.endsWith(".vercel.app") || cleanOrigin.includes(".vercel.app"));
+
+        if (!origin || allowedOrigins.includes(cleanOrigin) || isVercel) {
             callback(null, true);
         } else {
+            console.error(`❌ CORS_BLOCKED: Origin [${origin}] is not in allowed list [${allowedOrigins}] and is not a Vercel domain.`);
             callback(new Error('Not allowed by CORS'));
         }
     },
     credentials: true
 };
 app.use(cors(corsOption));
-
-// Middleware to fix double slashes in URLs (e.g., //api)
-app.use((req, res, next) => {
-    req.url = req.url.replace(/\/\/+/g, '/');
-    next();
-});
 
 // Serve uploaded files as static
 app.use('/uploads', express.static(uploadsDir));
