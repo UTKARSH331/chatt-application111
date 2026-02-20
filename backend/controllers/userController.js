@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { User } from "../models/userModel.js";
 import { Notification } from "../models/notificationModel.js";
 import bcrypt from "bcryptjs";
@@ -5,6 +6,14 @@ import jwt from "jsonwebtoken";
 
 export const register = async (req, res) => {
     try {
+        // --- Database Connection Guard ---
+        if (mongoose.connection.readyState !== 1) {
+            return res.status(503).json({
+                message: "Server is currently unable to reach the database. Please check if your MONGO_URI is correct and whitelisted.",
+                success: false
+            });
+        }
+
         const { fullName, username, password, confirmPassword, gender } = req.body;
         if (!fullName || !username || !password || !confirmPassword || !gender) {
             return res.status(400).json({ message: "All fields are required" });
