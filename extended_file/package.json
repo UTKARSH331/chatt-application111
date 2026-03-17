@@ -1,0 +1,17 @@
+{
+    "name": "antigravity-core",
+    "version": "1.0.0",
+    "description": "Antigravity P2P Framework Core",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "node examples/node_usage.js"
+    },
+    "keywords": [
+        "p2p",
+        "antigravity",
+        "messaging"
+    ],
+    "author": "Antigravity Agent",
+    "license": "ISC"
+}
